@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101116">
+  <meta name="description" content="Edit and render videos with a simple browser-based editing studio.">
+  <title>VideoEditor Studio</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="VideoEditor home">
+        <span class="brand-mark">V</span>
+        <span>Video<span class="brand-light">Editor</span></span>
+        <span class="brand-tag">STUDIO</span>
+      </a>
+      <div class="topbar-right">
+        <span class="local-badge"><span class="status-dot"></span> Local render engine</span>
+        <a class="github-link" href="https://github.com/jibrailk/VideoEditor" target="_blank" rel="noreferrer">GitHub ↗</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro">
+        <p class="eyebrow">YOUR CREATIVE WORKSPACE</p>
+        <h1>Make every second <span>count.</span></h1>
+        <p class="intro-copy">Upload a video, shape your cut, add captions, and render a ready-to-share MP4.</p>
+      </section>
+
+      <form id="editor-form">
+        <section class="workspace-grid">
+          <div class="panel source-panel">
+            <div class="panel-heading">
+              <div><p class="step-label">STEP 01</p><h2>Source video</h2></div>
+              <span class="panel-icon">↥</span>
+            </div>
+            <label class="dropzone" id="dropzone" for="video-input">
+              <input id="video-input" name="video" type="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,video/x-msvideo,.m4v" required>
+              <span class="upload-symbol">↑</span>
+              <strong>Drop your video here</strong>
+              <span class="drop-subtitle">or <span class="browse-link">browse files</span></span>
+              <span class="file-types">MP4, MOV, WEBM, MKV · up to 500 MB</span>
+            </label>
+            <div class="file-summary hidden" id="file-summary">
+              <div class="file-glyph">▶</div>
+              <div class="file-details"><strong id="file-name">video.mp4</strong><span id="file-size">0 MB</span></div>
+              <button class="text-button" type="button" id="change-file">Change</button>
+            </div>
+            <div class="preview-wrap hidden" id="preview-wrap">
+              <video id="video-preview" controls playsinline></video>
+              <div class="preview-meta"><span>Original preview</span><span id="video-duration">Duration unavailable</span></div>
+            </div>
+            <div class="source-note"><span class="note-icon">i</span><span>Your video is processed by the machine hosting this app. It is not uploaded to a third-party editing service.</span></div>
+          </div>
+
+          <div class="panel edit-panel">
+            <div class="panel-heading">
+              <div><p class="step-label">STEP 02</p><h2>Shape your edit</h2></div>
+              <span class="panel-icon">⌁</span>
+            </div>
+            <div class="field-row">
+              <label class="field"><span>Start time <small>seconds</small></span><input id="start-seconds" name="start_seconds" type="number" min="0" step="0.1" value="0"></label>
+              <label class="field"><span>End time <small>0 = video end</small></span><input id="end-seconds" name="end_seconds" type="number" min="0" step="0.1" value="0"></label>
+            </div>
+            <div class="field">
+              <label for="aspect-ratio">Output format</label>
+              <div class="ratio-options">
+                <label class="ratio-option"><input type="radio" name="aspect_ratio" value="landscape" checked><span class="ratio-preview landscape-preview"></span><span>Landscape</span><small>16:9</small></label>
+                <label class="ratio-option"><input type="radio" name="aspect_ratio" value="portrait"><span class="ratio-preview portrait-preview"></span><span>Portrait</span><small>9:16</small></label>
+                <label class="ratio-option"><input type="radio" name="aspect_ratio" value="square"><span class="ratio-preview square-preview"></span><span>Square</span><small>1:1</small></label>
+              </div>
+            </div>
+            <div class="field subtitle-field">
+              <label for="subtitle-input">Subtitles <span class="optional">OPTIONAL</span></label>
+              <label class="subtitle-upload" for="subtitle-input"><span class="caption-icon">CC</span><span><strong id="subtitle-name">Add an SRT captions file</strong><small>UTF-8 .srt file · captions are burned into the video</small></span><span class="plus-icon">+</span></label>
+              <input class="visually-hidden" id="subtitle-input" type="file" name="subtitles" accept=".srt,application/x-subrip">
+            </div>
+            <div class="field">
+              <label for="edit-notes">Editing notes <span class="coming-soon">AI EDITING · NEXT</span></label>
+              <textarea id="edit-notes" rows="3" placeholder="Example: Start with the strongest moment, remove long pauses, use bold captions... " disabled></textarea>
+              <p class="helper-text">Natural-language AI edits are on the roadmap. This MVP applies the trim, aspect ratio, and subtitle settings above.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="render-bar">
+          <div class="render-summary"><span class="render-icon">✦</span><div><strong>Ready to render</strong><span id="render-summary">Choose a video to configure your edit.</span></div></div>
+          <button class="render-button" id="render-button" type="submit"><span>Render video</span><span>↗</span></button>
+        </section>
+      </form>
+
+      <section class="panel progress-panel hidden" id="progress-panel" aria-live="polite">
+        <div class="progress-top"><div><p class="step-label">RENDER JOB</p><h2 id="progress-title">Preparing your video…</h2></div><span class="progress-percent" id="progress-percent">0%</span></div>
+        <div class="progress-track"><span id="progress-fill"></span></div>
+        <div class="progress-bottom"><span id="progress-message">Waiting for a render worker.</span><span id="elapsed-time"></span></div>
+        <div id="result-actions" class="result-actions hidden"><div class="success-mark">✓</div><div class="result-text"><strong>Your video is ready</strong><span id="result-size"></span></div><a class="download-button" id="download-link" href="#">Download MP4 ↓</a></div>
+        <div id="error-message" class="error-message hidden"></div>
+      </section>
+
+      <section class="feature-row">
+        <div><span class="feature-icon">◈</span><span><strong>FFmpeg-powered</strong><small>Open-source rendering</small></span></div>
+        <div><span class="feature-icon">⌘</span><span><strong>No GPU needed</strong><small>CPU rendering supported</small></span></div>
+        <div><span class="feature-icon">▣</span><span><strong>Mobile friendly</strong><small>Work from phone or laptop</small></span></div>
+      </section>
+    </main>
+    <footer><span>VIDEOEDITOR STUDIO <span class="footer-dot">·</span> EARLY ACCESS</span><span>Built for creators, one cut at a time.</span></footer>
+  </div>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
