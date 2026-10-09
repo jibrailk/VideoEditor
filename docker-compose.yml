@@ -1,0 +1,12 @@
+services:
+  videoeditor:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      VIDEOEDITOR_DATA_DIR: /app/data
+      MAX_UPLOAD_MB: "500"
+      MAX_RENDER_WORKERS: "1"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
