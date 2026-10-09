@@ -8,5 +8,8 @@ services:
       MAX_UPLOAD_MB: "500"
       MAX_RENDER_WORKERS: "1"
     volumes:
-      - ./data:/app/data
+      - video_data:/app/data
     restart: unless-stopped
+
+volumes:
+  video_data:
